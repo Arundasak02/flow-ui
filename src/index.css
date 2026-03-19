@@ -11,6 +11,7 @@
 
   --color-flow-border: rgba(223, 232, 255, 0.14);
   --color-flow-border-subtle: rgba(223, 232, 255, 0.08);
+  --color-flow-border-focus: #8e93ff;
 
   --color-flow-text: #f4f7ff;
   --color-flow-text-secondary: #b6c0d9;
@@ -26,6 +27,8 @@
   --color-flow-warning-muted: rgba(242, 179, 77, 0.14);
   --color-flow-error: #f06f78;
   --color-flow-error-muted: rgba(240, 111, 120, 0.14);
+  --color-flow-state-info: #67b9ff;
+  --color-flow-state-info-muted: rgba(103, 185, 255, 0.14);
 
   --color-flow-node-endpoint: #6f73ff;
   --color-flow-node-service: #5f8dff;
@@ -41,6 +44,25 @@
 
   --font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --flow-font-size-xs: 11px;
+  --flow-font-size-sm: 12px;
+  --flow-font-size-md: 14px;
+  --flow-font-size-lg: 16px;
+  --flow-font-size-xl: 20px;
+  --flow-font-size-2xl: 24px;
+
+  --flow-space-1: 4px;
+  --flow-space-2: 8px;
+  --flow-space-3: 12px;
+  --flow-space-4: 16px;
+  --flow-space-5: 20px;
+  --flow-space-6: 24px;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 9999px;
 }
 
 * { box-sizing: border-box; }

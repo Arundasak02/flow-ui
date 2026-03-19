@@ -35,6 +35,7 @@ function FlowNodeComponent({ data, id, selected }: NodeProps & { data: FlowNodeD
 
   const isActive = data.isOnActivePath || data.isActiveNode;
   const isError = data.isErrorNode;
+  const isDimmed = Boolean(data.isDimmed);
 
   const glowClass = isError
     ? 'animate-error-pulse'
@@ -43,6 +44,9 @@ function FlowNodeComponent({ data, id, selected }: NodeProps & { data: FlowNodeD
     : '';
 
   const compact = semanticLevel <= 2;
+  const showBusinessDescription = viewMode === 'business' && semanticLevel >= 3 && !compact;
+  const showRuntimeStats = viewMode === 'engineering' && semanticLevel >= 4 && !compact;
+  const showSharedFlows = semanticLevel >= 3 && !compact;
   const shapeClass =
     data.kind === 'endpoint'
       ? 'rounded-2xl'
@@ -60,6 +64,7 @@ function FlowNodeComponent({ data, id, selected }: NodeProps & { data: FlowNodeD
   return (
     <div
       onClick={() => selectNode(id)}
+      data-testid={`flow-node-${id}`}
       className={`
         group relative cursor-pointer
         border transition-all duration-200 ${shapeClass}
@@ -67,6 +72,7 @@ function FlowNodeComponent({ data, id, selected }: NodeProps & { data: FlowNodeD
           ? 'border-flow-accent bg-flow-elevated shadow-lg shadow-flow-accent/20'
           : 'border-flow-border bg-flow-surface hover:border-flow-accent/50 hover:bg-flow-elevated'
         }
+        ${isDimmed ? 'opacity-35 saturate-[0.75]' : 'opacity-100'}
         ${glowClass}
       `}
       style={{
@@ -110,7 +116,7 @@ function FlowNodeComponent({ data, id, selected }: NodeProps & { data: FlowNodeD
             <h3 className={`${compact ? 'text-xs' : 'text-sm'} font-semibold text-flow-text leading-tight mb-1`}>
               {data.businessName}
             </h3>
-            {!compact && data.businessDescription && (
+            {showBusinessDescription && data.businessDescription && (
               <p className="text-xs text-flow-text-secondary leading-relaxed mb-2">
                 {data.businessDescription}
               </p>
@@ -131,7 +137,7 @@ function FlowNodeComponent({ data, id, selected }: NodeProps & { data: FlowNodeD
               </p>
             )}
             {/* Runtime stats row */}
-            {!compact && (
+            {showRuntimeStats && (
               <div className="flex items-center gap-2 text-[10px] text-flow-text-muted">
               {data.avgDurationMs !== undefined && (
                 <span>{data.avgDurationMs}ms</span>
@@ -150,7 +156,7 @@ function FlowNodeComponent({ data, id, selected }: NodeProps & { data: FlowNodeD
         )}
 
         {/* Used-in flows indicator */}
-        {!compact && data.usedInFlows && data.usedInFlows.length > 1 && (
+        {showSharedFlows && data.usedInFlows && data.usedInFlows.length > 1 && (
           <div className="mt-2 pt-1.5 border-t border-flow-border-subtle">
             <span className="text-[10px] text-flow-text-muted">
               Shared across {data.usedInFlows.length} flows

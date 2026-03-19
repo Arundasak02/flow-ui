@@ -2,6 +2,9 @@ import { X, ExternalLink, Clock, Activity, AlertTriangle, Edit3, ChevronDown, Ch
 import { useState } from 'react';
 import { useFlowStore } from '@/stores/flowStore';
 import type { FlowNodeData } from '@/types/graph';
+import Button from '@/components/ui/Button';
+import Badge from '@/components/ui/Badge';
+import Skeleton from '@/components/ui/Skeleton';
 
 const statusLabel: Record<string, string> = {
   healthy: 'Healthy',
@@ -22,6 +25,8 @@ export default function NodeDetailPanel() {
   const selectNode = useFlowStore((s) => s.selectNode);
   const viewMode = useFlowStore((s) => s.viewMode);
   const nodeDataById = useFlowStore((s) => s.nodeDataById);
+  const isReplaying = useFlowStore((s) => s.isReplaying);
+  const activeTraceId = useFlowStore((s) => s.activeTraceId);
   const [techExpanded, setTechExpanded] = useState(false);
 
   const node = selectedNodeId ? nodeDataById[selectedNodeId] : null;
@@ -32,6 +37,11 @@ export default function NodeDetailPanel() {
         <p className="text-xs text-flow-text-muted">
           Select a node in the graph to inspect business meaning, runtime metrics, and technical details.
         </p>
+        <div className="mt-3 space-y-2">
+          <Skeleton className="h-3 w-3/5" />
+          <Skeleton className="h-8 w-full" />
+          <Skeleton className="h-8 w-full" />
+        </div>
       </div>
     );
   }
@@ -47,9 +57,12 @@ export default function NodeDetailPanel() {
             {d.status && (
               <div className={`w-2 h-2 rounded-full ${statusColor[d.status]}`} />
             )}
-            <span className="text-xs text-flow-text-muted uppercase tracking-wider">
-              {d.kind} {d.status && `· ${statusLabel[d.status]}`}
-            </span>
+            <Badge variant="neutral">{d.kind}</Badge>
+            {d.status && (
+              <span className="text-xs text-flow-text-muted uppercase tracking-wider">
+                {statusLabel[d.status]}
+              </span>
+            )}
           </div>
           <h2 className="text-base font-semibold text-flow-text leading-tight">
             {viewMode === 'business' ? d.businessName : d.technicalName}
@@ -57,6 +70,11 @@ export default function NodeDetailPanel() {
           <p className="text-xs text-flow-text-muted mt-0.5 font-mono truncate">
             {viewMode === 'business' ? d.technicalName : d.businessName}
           </p>
+          {isReplaying && (
+            <p className="text-[10px] text-flow-accent mt-1">
+              Replaying {activeTraceId ?? 'trace'}
+            </p>
+          )}
         </div>
         <button onClick={() => selectNode(null)} className="p-1 rounded hover:bg-flow-hover text-flow-text-muted hover:text-flow-text transition-colors">
           <X size={16} />
@@ -70,10 +88,10 @@ export default function NodeDetailPanel() {
             <h3 className="text-xs font-semibold text-flow-text-secondary uppercase tracking-wider">
               Business Description
             </h3>
-            <button className="flex items-center gap-1 text-[10px] text-flow-accent hover:text-flow-accent-hover transition-colors">
+            <Button variant="ghost" size="sm" className="!h-6 !px-1.5 text-[10px]">
               <Edit3 size={10} />
               Edit
-            </button>
+            </Button>
           </div>
           <p className="text-sm text-flow-text leading-relaxed">
             {d.businessDescription || 'No business description yet. Click Edit to add one.'}

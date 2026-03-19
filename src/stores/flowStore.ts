@@ -16,6 +16,10 @@ interface FlowState {
   graphId: string | null;
   useLiveData: boolean;
   nodeDataById: Record<string, FlowNodeData>;
+  sidebarCollapsed: boolean;
+  sidebarPinned: boolean;
+  inspectorWidth: number;
+  commandPaletteOpen: boolean;
 
   setViewMode: (mode: ViewMode) => void;
   selectNode: (id: string | null) => void;
@@ -30,7 +34,16 @@ interface FlowState {
   setGraphId: (id: string | null) => void;
   setUseLiveData: (enabled: boolean) => void;
   setNodeDataById: (data: Record<string, FlowNodeData>) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  toggleSidebarCollapsed: () => void;
+  setSidebarPinned: (pinned: boolean) => void;
+  setInspectorWidth: (width: number) => void;
+  setCommandPaletteOpen: (open: boolean) => void;
 }
+
+const defaultSidebarCollapsed = localStorage.getItem('flow-sidebar-collapsed') === '1';
+const defaultSidebarPinned = localStorage.getItem('flow-sidebar-pinned') !== '0';
+const defaultInspectorWidth = Number(localStorage.getItem('flow-inspector-width') ?? 360) || 360;
 
 export const useFlowStore = create<FlowState>((set) => ({
   viewMode: 'business',
@@ -46,6 +59,10 @@ export const useFlowStore = create<FlowState>((set) => ({
   graphId: null,
   useLiveData: false,
   nodeDataById: {},
+  sidebarCollapsed: defaultSidebarCollapsed,
+  sidebarPinned: defaultSidebarPinned,
+  inspectorWidth: Math.max(300, Math.min(520, defaultInspectorWidth)),
+  commandPaletteOpen: false,
 
   setViewMode: (mode) => set({ viewMode: mode }),
   selectNode: (id) => set({ selectedNodeId: id, panelOpen: id !== null }),
@@ -60,4 +77,24 @@ export const useFlowStore = create<FlowState>((set) => ({
   setGraphId: (id) => set({ graphId: id }),
   setUseLiveData: (enabled) => set({ useLiveData: enabled }),
   setNodeDataById: (data) => set({ nodeDataById: data }),
+  setSidebarCollapsed: (collapsed) => {
+    localStorage.setItem('flow-sidebar-collapsed', collapsed ? '1' : '0');
+    set({ sidebarCollapsed: collapsed });
+  },
+  toggleSidebarCollapsed: () =>
+    set((state) => {
+      const next = !state.sidebarCollapsed;
+      localStorage.setItem('flow-sidebar-collapsed', next ? '1' : '0');
+      return { sidebarCollapsed: next };
+    }),
+  setSidebarPinned: (pinned) => {
+    localStorage.setItem('flow-sidebar-pinned', pinned ? '1' : '0');
+    set({ sidebarPinned: pinned });
+  },
+  setInspectorWidth: (width) => {
+    const safe = Math.max(300, Math.min(520, width));
+    localStorage.setItem('flow-inspector-width', String(safe));
+    set({ inspectorWidth: safe });
+  },
+  setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
 }));

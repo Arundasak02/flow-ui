@@ -14,6 +14,7 @@ function FlowEdgeComponent({
   });
 
   const isActive = data?.isOnActivePath;
+  const isDimmed = data?.isDimmed;
   const edgeType = data?.edgeType ?? 'sync';
 
   const edgeStyleByType = {
@@ -46,7 +47,7 @@ function FlowEdgeComponent({
           filter: isActive ? 'drop-shadow(0 0 6px var(--color-flow-glow))' : 'none',
           transition: 'stroke 0.3s, stroke-width 0.3s, filter 0.3s',
           strokeDasharray: edgeStyleByType.strokeDasharray,
-          opacity: edgeStyleByType.opacity,
+          opacity: isDimmed ? 0.2 : edgeStyleByType.opacity,
         }}
       />
       {/* Animated packet dot on active edges */}
