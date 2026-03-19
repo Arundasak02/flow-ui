@@ -37,6 +37,18 @@ interface FcsApiResponse<T> {
   data: T;
 }
 
+interface FcsRuntimeShape {
+  requestsPerHour?: number;
+  requests?: number;
+  errorsPerHour?: number;
+  errors?: number;
+  activeFlows?: number;
+  flows?: number;
+  avgLatencyMs?: number;
+  latencyMs?: number;
+  updatedAt?: string;
+}
+
 const BASE_URL = import.meta.env.VITE_FCS_BASE_URL ?? '/api';
 
 const nodeKindMap: Record<FcsNodeType, FlowNodeData['kind']> = {
@@ -129,4 +141,67 @@ export async function getFlowGraph(graphId: string, level: SemanticLevel) {
   const nodes = raw.nodes.map((n, i) => mapNode(n, i, level));
   const edges = raw.edges.map((e) => mapEdge(e, level));
   return { nodes, edges };
+}
+
+export interface RuntimeSnapshot {
+  requestsPerHour: number;
+  errorsPerHour: number;
+  activeFlows: number;
+  avgLatencyMs: number;
+  updatedAt?: string;
+  source: 'live' | 'derived';
+}
+
+function mapRuntimePayload(payload: FcsRuntimeShape): RuntimeSnapshot {
+  return {
+    requestsPerHour: Number(payload.requestsPerHour ?? payload.requests ?? 0),
+    errorsPerHour: Number(payload.errorsPerHour ?? payload.errors ?? 0),
+    activeFlows: Number(payload.activeFlows ?? payload.flows ?? 0),
+    avgLatencyMs: Number(payload.avgLatencyMs ?? payload.latencyMs ?? 0),
+    updatedAt: payload.updatedAt,
+    source: 'live',
+  };
+}
+
+export async function getRuntimeSnapshot(graphId: string): Promise<RuntimeSnapshot> {
+  const endpoints = [
+    `${BASE_URL}/graphs/${encodeURIComponent(graphId)}/runtime-summary`,
+    `${BASE_URL}/graphs/${encodeURIComponent(graphId)}/runtime`,
+  ];
+
+  for (const endpoint of endpoints) {
+    const res = await fetch(endpoint);
+    if (!res.ok) continue;
+    const body = (await res.json()) as FcsApiResponse<FcsRuntimeShape> | FcsRuntimeShape;
+    const payload = 'data' in body ? body.data : body;
+    return mapRuntimePayload(payload ?? {});
+  }
+
+  throw new Error('FCS runtime snapshot unavailable');
+}
+
+export function deriveRuntimeSnapshot(
+  nodes: Node<FlowNodeData>[],
+  edges: Edge<FlowEdgeData>[]
+): RuntimeSnapshot {
+  const requestsPerHour = nodes.reduce((sum, node) => sum + (node.data.callsPerHour ?? 0), 0);
+  const errorsWeighted = nodes.reduce((sum, node) => {
+    const calls = node.data.callsPerHour ?? 0;
+    const errorRate = node.data.errorRate ?? 0;
+    return sum + calls * (errorRate / 100);
+  }, 0);
+  const avgLatencyBase = nodes
+    .map((node) => node.data.avgDurationMs)
+    .filter((value): value is number => typeof value === 'number');
+  const avgLatencyMs = avgLatencyBase.length
+    ? Math.round(avgLatencyBase.reduce((sum, value) => sum + value, 0) / avgLatencyBase.length)
+    : 0;
+
+  return {
+    requestsPerHour: Math.round(requestsPerHour),
+    errorsPerHour: Math.round(errorsWeighted),
+    activeFlows: Math.max(1, Math.min(99, edges.length)),
+    avgLatencyMs,
+    source: 'derived',
+  };
 }

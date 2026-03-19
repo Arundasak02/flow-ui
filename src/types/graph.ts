@@ -32,6 +32,7 @@ export interface FlowNodeData {
   isOnActivePath?: boolean;
   isActiveNode?: boolean;
   isErrorNode?: boolean;
+  isDimmed?: boolean;
 
   // shared across flows
   usedInFlows?: string[];
@@ -45,6 +46,7 @@ export interface FlowEdgeData {
   callCount?: number;
   semanticLevel?: SemanticLevel;
   edgeType?: 'sync' | 'async' | 'kafka' | 'db';
+  isDimmed?: boolean;
 }
 
 export type ViewMode = 'business' | 'engineering';
