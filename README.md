@@ -51,7 +51,7 @@ npm run test:e2e:install
 | TanStack Query | Server state (API) |
 | Framer Motion | Animations |
 | Lucide React | Icons |
-| Inter + JetBrains Mono | Typography |
+| Manrope + JetBrains Mono | Typography |
 
 ## Project Structure
 
