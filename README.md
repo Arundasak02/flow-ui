@@ -13,6 +13,26 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173)
 
+### Petclinic E2E Setup
+
+When running with the Petclinic docker stack, `flow-core-service` is typically exposed on `http://localhost:7070` while `http://localhost:8080` is the API Gateway UI.
+
+Set one of these before starting Vite:
+
+```bash
+# Option A: keep UI calls on /api and point Vite proxy to FCS
+export VITE_FCS_PROXY_TARGET=http://localhost:7070
+
+# Option B: bypass proxy and call FCS directly
+export VITE_FCS_BASE_URL=http://localhost:7070
+```
+
+Then start:
+
+```bash
+npm run dev
+```
+
 ## Visual QA (Playwright)
 
 Run visual and interaction checks:
@@ -80,3 +100,5 @@ src/
 ## Connecting to Flow Core Service
 
 The Vite dev server proxies `/api/*` to `http://localhost:8080`. Start FCS on port 8080 and the UI will connect automatically.
+
+If your FCS runs on a different port (for example `7070` in Petclinic stack), set `VITE_FCS_PROXY_TARGET` before starting dev server.

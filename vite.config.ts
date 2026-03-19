@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 
+const fcsProxyTarget = process.env.VITE_FCS_PROXY_TARGET || 'http://localhost:8080'
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -14,7 +16,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: fcsProxyTarget,
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api/, ''),
       },
