@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+/* ─── Flow Design Tokens ─── */
+@theme {
+  --color-flow-base: #06070b;
+  --color-flow-surface: #0d1017;
+  --color-flow-elevated: #121722;
+  --color-flow-overlay: #171d2a;
+  --color-flow-hover: #1b2232;
+
+  --color-flow-border: rgba(223, 232, 255, 0.14);
+  --color-flow-border-subtle: rgba(223, 232, 255, 0.08);
+
+  --color-flow-text: #f4f7ff;
+  --color-flow-text-secondary: #b6c0d9;
+  --color-flow-text-muted: #7f8aa8;
+
+  --color-flow-accent: #6f73ff;
+  --color-flow-accent-hover: #8f93ff;
+  --color-flow-accent-muted: rgba(111, 115, 255, 0.14);
+
+  --color-flow-success: #50c780;
+  --color-flow-success-muted: rgba(80, 199, 128, 0.14);
+  --color-flow-warning: #f2b34d;
+  --color-flow-warning-muted: rgba(242, 179, 77, 0.14);
+  --color-flow-error: #f06f78;
+  --color-flow-error-muted: rgba(240, 111, 120, 0.14);
+
+  --color-flow-node-endpoint: #6f73ff;
+  --color-flow-node-service: #5f8dff;
+  --color-flow-node-method: #a67bff;
+  --color-flow-node-topic: #f2b34d;
+  --color-flow-node-database: #50c780;
+  --color-flow-node-external: #ef7cc5;
+
+  --color-flow-glow: rgba(111, 115, 255, 0.28);
+  --color-flow-glow-success: rgba(80, 199, 128, 0.28);
+  --color-flow-glow-error: rgba(240, 111, 120, 0.3);
+  --color-flow-packet: #8992ff;
+
+  --font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: var(--color-flow-base);
+  color: var(--color-flow-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 0.4px, transparent 0.4px);
+  background-size: 2px 2px;
+  opacity: 0.14;
+}
+
+.react-flow__background {
+  background-color: var(--color-flow-base) !important;
+}
+
+.react-flow__minimap {
+  background-color: var(--color-flow-surface) !important;
+  border: 1px solid var(--color-flow-border) !important;
+  border-radius: 8px !important;
+}
+
+.react-flow__controls {
+  border: 1px solid var(--color-flow-border) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+.react-flow__controls-button {
+  background-color: var(--color-flow-surface) !important;
+  border-color: var(--color-flow-border) !important;
+  color: var(--color-flow-text-secondary) !important;
+  width: 32px !important;
+  height: 32px !important;
+}
+.react-flow__controls-button:hover {
+  background-color: var(--color-flow-hover) !important;
+  color: var(--color-flow-text) !important;
+}
+.react-flow__controls-button svg { fill: currentColor !important; }
+
+.react-flow__edge-path {
+  stroke: var(--color-flow-border) !important;
+  stroke-width: 1.5 !important;
+}
+
+.react-flow__attribution { display: none !important; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-flow-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-flow-hover); }
+
+@keyframes packet-pulse {
+  0%, 100% { box-shadow: 0 0 8px 2px var(--color-flow-glow); }
+  50% { box-shadow: 0 0 20px 6px var(--color-flow-glow); }
+}
+
+@keyframes node-glow {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 24px 4px var(--color-flow-glow); }
+}
+
+@keyframes error-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 20px 6px var(--color-flow-glow-error); }
+}
+
+.animate-packet { animation: packet-pulse 1.5s ease-in-out infinite; }
+.animate-node-glow { animation: node-glow 2s ease-in-out infinite; }
+.animate-error-pulse { animation: error-pulse 1s ease-in-out infinite; }
+
+.flow-panel {
+  border: 1px solid var(--color-flow-border);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 40%), var(--color-flow-surface);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
